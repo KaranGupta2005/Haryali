@@ -2,11 +2,13 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 import Footer from "./components/Footer.jsx";
 import Home from "./pages/Home.jsx";
-import About from "./pages/About";
-import Features from "./pages/Features";
-import Dashboard from "./features/buyer/Dashboard";
+import About from "./pages/About.jsx";
+import Features from "./pages/Features.jsx";
+import FarmerDashboard from "./features/farmer/Dashboard.jsx";
+import BuyerDashboard from "./features/buyer/Dashboard.jsx";
+import LogisticsDashboard from "./features/logistics/Dashboard.jsx";
 import Login from "./pages/Login.jsx";
-import SignUp from "./pages/Signup.jsx";
+import Signup from "./pages/Signup.jsx";
 import DashBoard from "./components/DashBoard.jsx";
 
 function App() {
@@ -24,7 +26,10 @@ function App() {
             <Route path="/features" element={<Features />} />
             <Route path="/dashboard" element={<DashBoard />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
+            <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
+            <Route path="/logistics/dashboard" element={<LogisticsDashboard />} />
           </Routes>
         </main>
 

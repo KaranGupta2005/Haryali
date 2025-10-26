@@ -1,12 +1,11 @@
-"use client";
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-export default function Sidebar({ links = [] }) {
+export default function Sidebar({ links = [], brand = "Haryali" }) {
   return (
-    <aside className="w-64 min-h-screen bg-gradient-to-br from-green-200 via-lime-100 to-green-100 p-7 rounded-3xl shadow-2xl flex flex-col space-y-6 sticky top-0 z-20">
-      <h2 className="text-3xl font-extrabold text-green-700 tracking-tight mb-8 bg-gradient-to-r from-lime-500/70 to-green-700/80 bg-clip-text text-transparent">
-        🌾 Haryali
+    <aside className="w-64 min-h-screen bg-gradient-to-bl from-green-200 via-lime-100 to-green-100 p-7 rounded-3xl shadow-2xl flex flex-col space-y-6 sticky top-0 z-20">
+      <h2 className="text-3xl font-extrabold text-green-800 tracking-tight mb-6 bg-gradient-to-r from-lime-600/70 to-green-700/80 bg-clip-text text-transparent">
+        🌾 {brand}
       </h2>
       {links.map((link) => (
         <NavLink
@@ -20,7 +19,7 @@ export default function Sidebar({ links = [] }) {
             }`
           }
         >
-          {link.name}
+          {link.icon && <span className="mr-1">{link.icon}</span>} {link.name}
         </NavLink>
       ))}
       <div className="pt-8 mt-auto text-xs text-green-500 opacity-60">
@@ -29,4 +28,3 @@ export default function Sidebar({ links = [] }) {
     </aside>
   );
 }
-
