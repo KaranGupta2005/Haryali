@@ -7,7 +7,6 @@ import Features from "./pages/Features";
 import Dashboard from "./features/buyer/Dashboard";
 import Login from "./pages/Login.jsx";
 import SignUp from "./pages/Signup.jsx";
-import { useState } from "react";
 
 function App() {
   return (
