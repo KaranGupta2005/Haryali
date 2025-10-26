@@ -6,16 +6,18 @@ import {
   PieChart, Pie, Cell, Legend
 } from "recharts";
 
-function SummaryCard({ title, value, icon = "🌱" }) {
+// Reusable summary card
+function SummaryCard({ title, value, icon }) {
   return (
     <div className="bg-gradient-to-br from-green-200 via-lime-100 to-white rounded-2xl shadow-xl border border-green-100 p-7 flex flex-col items-center justify-center hover:scale-[1.025] transition transform">
-      <span className="text-3xl">{icon}</span>
+      <span className="text-3xl">{icon || "🌱"}</span>
       <p className="text-gray-600 text-base tracking-tight mt-2">{title}</p>
       <p className="text-2xl font-extrabold text-green-700 mt-1">{value}</p>
     </div>
   );
 }
 
+// Status badge
 function StatusBadge({ status }) {
   const colors = {
     Ordered: "bg-yellow-300 text-yellow-900 shadow",
@@ -29,68 +31,74 @@ function StatusBadge({ status }) {
   );
 }
 
-export default function Dashboard({ userName, ordersData = [], residuesData = [] }) {
-  // Safe fallback: dummy props
+export default function DashBoard({
+  userName,
+  summaryCards = [],
+  ordersData = [],
+  residuesData = [],
+  sidebarLinks = [],
+  brand = "ParaLink",
+  pageTitle = "Dashboard",
+}) {
+  // Fallback example content
   userName = userName || "User";
-  if (ordersData.length === 0) {
-    ordersData = [
-      { id: 1, crop: "Wheat", qty: 800, price: 30, status: "Ordered", date: "2025-10-23" },
-      { id: 2, crop: "Rice", qty: 1600, price: 24, status: "In Transit", date: "2025-10-20" },
-      { id: 3, crop: "Sugarcane", qty: 1000, price: 38, status: "Delivered", date: "2025-10-15" },
-    ];
-  }
-  if (residuesData.length === 0) {
-    residuesData = [
-      {
-        id: 1,
-        biomassType: "Paddy Straw",
-        quantityKg: 500,
-        predictedPricePerKg: 8.5,
-        farmer: "Ravi Kumar",
-        location: "Karnal, Haryana",
-        priceType: "Fixed",
-      },
-      {
-        id: 2,
-        biomassType: "Sugarcane Trash",
-        quantityKg: 1200,
-        predictedPricePerKg: 7.7,
-        farmer: "Manpreet Singh",
-        location: "Ambala, Haryana",
-        priceType: "Auction",
-      },
-    ];
-  }
+  summaryCards = summaryCards.length
+    ? summaryCards
+    : [
+        { title: "Active Orders", value: 2, icon: "📦" },
+        { title: "Completed Orders", value: 1, icon: "✔️" },
+        { title: "Total Quantity", value: "1000 kg", icon: "🥗" },
+        { title: "Total Spend", value: "₹3800", icon: "💸" },
+      ];
+  ordersData = ordersData.length
+    ? ordersData
+    : [
+        { id: 1, crop: "Wheat", qty: 800, price: 30, status: "Ordered", date: "2025-10-23" },
+        { id: 2, crop: "Rice", qty: 1600, price: 24, status: "In Transit", date: "2025-10-20" },
+        { id: 3, crop: "Sugarcane", qty: 1000, price: 38, status: "Delivered", date: "2025-10-15" },
+      ];
+  residuesData = residuesData.length
+    ? residuesData
+    : [
+        {
+          id: 1,
+          biomassType: "Paddy Straw",
+          quantityKg: 500,
+          predictedPricePerKg: 8.5,
+          farmer: "Ravi Kumar",
+          location: "Karnal, Haryana",
+          priceType: "Fixed",
+        },
+        {
+          id: 2,
+          biomassType: "Sugarcane Trash",
+          quantityKg: 1200,
+          predictedPricePerKg: 7.7,
+          farmer: "Manpreet Singh",
+          location: "Ambala, Haryana",
+          priceType: "Auction",
+        },
+      ];
 
-  const activeOrders = ordersData.filter(o => o.status !== "Delivered").length;
-  const completedOrders = ordersData.filter(o => o.status === "Delivered").length;
+  // Prepare chart data
   const totalQty = ordersData.reduce((sum, o) => sum + o.qty, 0);
-  const totalSpend = ordersData.reduce((sum, o) => sum + o.qty * o.price, 0);
-
+  const completedOrders = ordersData.filter((o) => o.status === "Delivered").length;
   const monthlyData = [
     { month: "May", qty: 800 },
     { month: "Jun", qty: 1200 },
     { month: "Jul", qty: 1000 },
     { month: "Aug", qty: totalQty },
   ];
-
   const statusData = [
     { name: "Ordered", value: ordersData.filter(o => o.status === "Ordered").length },
     { name: "In Transit", value: ordersData.filter(o => o.status === "In Transit").length },
     { name: "Delivered", value: completedOrders },
   ];
-
   const COLORS = ["#facc15", "#3b82f6", "#22c55e"];
-
-  const sidebarLinks = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Orders", path: "/orders" },
-    { name: "Marketplace", path: "/marketplace" },
-  ];
 
   return (
     <div className="flex min-h-screen bg-gradient-to-tr from-green-100 via-white to-lime-50">
-      <Sidebar links={sidebarLinks} />
+      <Sidebar links={sidebarLinks} brand={brand} />
       <main className="flex-1 p-8 md:p-14 overflow-auto">
         <h1 className="text-5xl font-extrabold text-green-800 mb-9 drop-shadow-lg">
           Welcome, {userName} <span className="animate-wave">👋</span>
@@ -98,13 +106,12 @@ export default function Dashboard({ userName, ordersData = [], residuesData = []
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
-          <SummaryCard title="Active Orders" value={activeOrders} icon="📦" />
-          <SummaryCard title="Completed Orders" value={completedOrders} icon="✔️" />
-          <SummaryCard title="Total Quantity" value={`${totalQty} kg`} icon="🥗" />
-          <SummaryCard title="Total Spend" value={`₹${totalSpend.toFixed(0)}`} icon="💸" />
+          {summaryCards.map((c, idx) => (
+            <SummaryCard key={c.title} {...c} />
+          ))}
         </div>
 
-        {/* Charts */}
+        {/* Graphs/Charts */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
           <div className="bg-white rounded-2xl shadow-lg border border-green-100 p-7 flex flex-col">
             <h2 className="text-lg font-bold text-green-700 mb-4 flex items-center gap-1">
@@ -177,7 +184,7 @@ export default function Dashboard({ userName, ordersData = [], residuesData = []
           </table>
         </div>
 
-        {/* Marketplace / Parali Table */}
+        {/* Parali Marketplace */}
         <div className="mt-10">
           <h2 className="text-2xl font-extrabold text-green-700 mb-4 flex items-center gap-2">
             🌱 Parali Marketplace
@@ -217,9 +224,6 @@ export default function Dashboard({ userName, ordersData = [], residuesData = []
             20% { transform: rotate(-12deg);}
             30% { transform: rotate(20deg);}
             40%,100% { transform: rotate(0deg);}
-          }
-          @media (max-width: 600px) {
-            aside {display:none;}
           }
         `}</style>
       </main>

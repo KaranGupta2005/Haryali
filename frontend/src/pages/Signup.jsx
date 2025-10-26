@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 
 export default function Signup() {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [role, setRole] = useState(""); 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [focusedField, setFocusedField] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -24,6 +26,10 @@ export default function Signup() {
     setLoading(true);
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
+      if (role === "Farmer") navigate("/farmer/dashboard");
+      else if (role === "Buyer") navigate("/buyer/dashboard");
+      else if (role === "Logistics") navigate("/logistics/dashboard");
+      else setError("Select a valid role to continue.");
     } catch {
       setError("Signup failed. Please try again.");
     } finally {
@@ -92,6 +98,7 @@ export default function Signup() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Input fields */}
             {inputFields.map(({ field, icon, placeholder, type }) => (
               <div key={field} className="relative group">
                 <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-lime-300/80 text-lg z-10">{icon}</div>
@@ -115,6 +122,21 @@ export default function Signup() {
                 ></div>
               </div>
             ))}
+
+            {/* Role Selection */}
+            <div className="relative group">
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full pl-4 pr-6 py-4 bg-white/10 backdrop-blur-md border-2 rounded-2xl text-white placeholder-white/55 transition-all duration-300 border-white/20 focus:border-green-400"
+                required
+              >
+                <option value="">Select Your Role</option>
+                <option value="Farmer">👨‍🌾 Farmer</option>
+                <option value="Buyer">🛒 Buyer</option>
+                <option value="Logistics">🚚 Logistics</option>
+              </select>
+            </div>
 
             <button
               type="submit"
@@ -145,3 +167,4 @@ export default function Signup() {
     </div>
   );
 }
+
