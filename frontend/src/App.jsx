@@ -5,7 +5,8 @@ import Home from "./pages/Home.jsx";
 import About from "./pages/About";
 import Features from "./pages/Features";
 import Dashboard from "./features/buyer/Dashboard";
-import Contact from "./pages/Contact";
+import Login from "./pages/Login.jsx";
+import SignUp from "./pages/Signup.jsx";
 import { useState } from "react";
 
 function App() {
@@ -22,7 +23,8 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/features" element={<Features />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/contact" element={<Contact />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
           </Routes>
         </main>
 

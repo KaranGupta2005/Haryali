@@ -26,7 +26,8 @@ export default function Navbar() {
     { name: "About", path: "/about" },
     { name: "Features", path: "/features" },
     { name: "Dashboard", path: "/dashboard" },
-    { name: "Contact", path: "/contact" },
+    { name: "Login", path: "/login" },
+    { name: "Sign Up", path: "/signup" },
   ];
 
   const baseLink =
