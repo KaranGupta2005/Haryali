@@ -1,4 +1,3 @@
-"use client";
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
