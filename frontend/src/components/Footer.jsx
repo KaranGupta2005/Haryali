@@ -6,7 +6,7 @@ export default function Footer() {
     {
       name: "Facebook",
       icon: <Facebook size={20} />,
-      href: "#", // Add your page link
+      href: "#", 
       color: "hover:text-lime-300",
     },
     {
