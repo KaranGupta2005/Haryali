@@ -1,0 +1,32 @@
+"use client";
+import React from "react";
+import { NavLink } from "react-router-dom";
+
+export default function Sidebar({ links = [] }) {
+  return (
+    <aside className="w-64 min-h-screen bg-gradient-to-br from-green-200 via-lime-100 to-green-100 p-7 rounded-3xl shadow-2xl flex flex-col space-y-6 sticky top-0 z-20">
+      <h2 className="text-3xl font-extrabold text-green-700 tracking-tight mb-8 bg-gradient-to-r from-lime-500/70 to-green-700/80 bg-clip-text text-transparent">
+        🌾 Haryali
+      </h2>
+      {links.map((link) => (
+        <NavLink
+          key={link.name}
+          to={link.path}
+          className={({ isActive }) =>
+            `block px-5 py-3 rounded-xl font-semibold transition-all duration-150 shadow-sm hover:bg-green-200/60 hover:scale-[1.03] ${
+              isActive
+                ? "bg-green-300 text-white shadow-lg scale-[1.08]"
+                : "text-green-900 border border-green-100"
+            }`
+          }
+        >
+          {link.name}
+        </NavLink>
+      ))}
+      <div className="pt-8 mt-auto text-xs text-green-500 opacity-60">
+        © 2025 Haryali Tech
+      </div>
+    </aside>
+  );
+}
+
