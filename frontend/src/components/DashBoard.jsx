@@ -6,18 +6,16 @@ import {
   PieChart, Pie, Cell, Legend
 } from "recharts";
 
-// Reusable summary card
-function SummaryCard({ title, value, icon }) {
+
+function SummaryCard({ title, value}) {
   return (
     <div className="bg-gradient-to-br from-green-200 via-lime-100 to-white rounded-2xl shadow-xl border border-green-100 p-7 flex flex-col items-center justify-center hover:scale-[1.025] transition transform">
-      <span className="text-3xl">{icon || "🌱"}</span>
       <p className="text-gray-600 text-base tracking-tight mt-2">{title}</p>
       <p className="text-2xl font-extrabold text-green-700 mt-1">{value}</p>
     </div>
   );
 }
 
-// Status badge
 function StatusBadge({ status }) {
   const colors = {
     Ordered: "bg-yellow-300 text-yellow-900 shadow",
@@ -37,18 +35,18 @@ export default function DashBoard({
   ordersData = [],
   residuesData = [],
   sidebarLinks = [],
-  brand = "ParaLink",
+  brand = "Haryali",
   pageTitle = "Dashboard",
 }) {
-  // Fallback example content
+  
   userName = userName || "User";
   summaryCards = summaryCards.length
     ? summaryCards
     : [
-        { title: "Active Orders", value: 2, icon: "📦" },
-        { title: "Completed Orders", value: 1, icon: "✔️" },
-        { title: "Total Quantity", value: "1000 kg", icon: "🥗" },
-        { title: "Total Spend", value: "₹3800", icon: "💸" },
+        { title: "Active Orders", value: 2 },
+        { title: "Completed Orders", value: 1},
+        { title: "Total Quantity", value: "1000 kg" },
+        { title: "Total Spend", value: "₹3800" },
       ];
   ordersData = ordersData.length
     ? ordersData
@@ -80,7 +78,6 @@ export default function DashBoard({
         },
       ];
 
-  // Prepare chart data
   const totalQty = ordersData.reduce((sum, o) => sum + o.qty, 0);
   const completedOrders = ordersData.filter((o) => o.status === "Delivered").length;
   const monthlyData = [
@@ -184,10 +181,10 @@ export default function DashBoard({
           </table>
         </div>
 
-        {/* Parali Marketplace */}
+        {/* Haryali Marketplace */}
         <div className="mt-10">
           <h2 className="text-2xl font-extrabold text-green-700 mb-4 flex items-center gap-2">
-            🌱 Parali Marketplace
+            🌱 Haryali Marketplace
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-7">
             {residuesData.map((item) => (
@@ -207,7 +204,7 @@ export default function DashBoard({
                   </span>
                 </div>
                 <button className="mt-6 bg-gradient-to-r from-green-600 to-lime-500 hover:from-lime-600 hover:to-green-700 text-white rounded-xl py-2 font-bold transition shadow hover:scale-[1.05]">
-                  {item.priceType === "Auction" ? "Place Bid 🚀" : "Order Now 🛒"}
+                  {item.priceType === "Auction" ? "Place Bid" : "Order Now"}
                 </button>
               </div>
             ))}

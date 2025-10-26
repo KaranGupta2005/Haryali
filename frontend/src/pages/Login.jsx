@@ -1,5 +1,7 @@
+"use client";
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -23,11 +25,9 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-     
-      await new Promise((resolve) => setTimeout(resolve, 1500)); 
-      
+      await new Promise((resolve) => setTimeout(resolve, 1200));
       console.log("Login data:", formData);
-    } catch (err) {
+    } catch {
       setError("Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
@@ -35,101 +35,107 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-screen font-sans">
-      {/* Background: */}
-      <div className="fixed inset-0 bg-gradient-to-br from-green-950 via-green-900 to-lime-950">
-        <div className="absolute inset-0 bg-black/40"></div>
-        {Array.from({ length: 10 }, (_, i) => (
-          <div
+    <div className="relative min-h-screen font-sans overflow-hidden">
+      {/* Animated Gradient Background */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="fixed inset-0 bg-gradient-to-br from-green-950 via-green-900 to-lime-950"
+      >
+        {[...Array(12)].map((_, i) => (
+          <motion.div
             key={i}
-            className="absolute bg-lime-300/10 rounded-full animate-bubble"
+            className="absolute bg-lime-300/10 rounded-full blur-sm"
             style={{
-              width: `${Math.random() * 40 + 20}px`,
-              height: `${Math.random() * 40 + 20}px`,
+              width: `${Math.random() * 50 + 20}px`,
+              height: `${Math.random() * 50 + 20}px`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animationDuration: `${Math.random() * 8 + 4}s`,
-              animationDelay: `${Math.random() * 3}s`,
+            }}
+            animate={{
+              y: [0, -20, 0],
+              opacity: [0.3, 0.8, 0.3],
+              scale: [1, 1.1, 1],
+            }}
+            transition={{
+              duration: Math.random() * 6 + 4,
+              repeat: Infinity,
+              ease: "easeInOut",
             }}
           />
         ))}
-        
-        <style>
-            {`
-              @keyframes bubble {
-                  0%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
-                  50% { transform: translateY(-20px) scale(1.1); opacity: 0.8; }
-              }
-              .animate-bubble {
-                  animation: bubble infinite alternate ease-in-out;
-              }
-            `}
-        </style>
-      </div>
+        <div className="absolute inset-0 bg-black/40" />
+      </motion.div>
 
+      {/* Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
-        <div
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
           className={`flex ${isMobile ? "flex-col" : "flex-row"} w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl backdrop-blur-xl bg-white/10 border border-white/20`}
         >
-          {/* Left Image*/}
+          {/* Left Section */}
           {!isMobile && (
-            <div className="flex-1 flex flex-col items-center justify-center p-12 bg-gradient-to-br from-green-800/70 to-lime-700/60 border-r border-white/20 relative">
-              <div className="mb-8 p-4 rounded-full bg-black/20 backdrop-blur-sm border border-white/30">
-                <img src="/leaf.png" alt="Haryali Platform" className="w-full h-full rounded-[50%]" />
+            <motion.div
+              initial={{ x: -40, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className="flex-1 flex flex-col items-center justify-center p-12 bg-gradient-to-br from-green-800/70 to-lime-700/60 border-r border-white/20"
+            >
+              <div className="mb-8 p-4 rounded-full bg-black/20 border border-white/30">
+                <img src="/leaf.png" alt="ParaLink" className="w-28 h-28 rounded-full" />
               </div>
               <h3 className="text-white text-3xl font-extrabold mb-3 tracking-tight">
-                Haryali Platform
+                ParaLink Platform
               </h3>
-              <p className="text-white/80 text-lg max-w-sm text-center font-light">
-                Manage, Monitor, and Grow Smarter. Access your data anytime, anywhere.
+              <p className="text-white/80 text-lg text-center max-w-sm font-light">
+                Empowering farmers and industries through sustainable connections.
               </p>
-            </div>
+            </motion.div>
           )}
 
-          {/* Right: Login Form */}
-          <div
-            className={`flex-1 flex flex-col justify-center ${isMobile ? "p-8" : "p-12"} bg-black/30 backdrop-blur-md relative`}
-          >
-            {/* Header */}
+          {/* Right Section */}
+          <div className={`flex-1 flex flex-col justify-center ${isMobile ? "p-8" : "p-12"} bg-black/30 backdrop-blur-md`}>
             <div className="text-center mb-8">
-              <h2 className="text-4xl font-extrabold text-white mb-2 tracking-tighter">
-                Welcome Back 
-              </h2>
+              <motion.h2
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="text-4xl font-extrabold text-white mb-2"
+              >
+                Welcome Back 👋
+              </motion.h2>
               <p className="text-lime-300 text-lg">
-                Enter your credentials to continue
+                Log in to continue your green journey
               </p>
             </div>
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
               {[
-                {
-                  field: "email",
-                  icon: "📧",
-                  placeholder: "Email Address",
-                  type: "email",
-                },
-                {
-                  field: "password",
-                  icon: "🔒",
-                  placeholder: "Password",
-                  type: "password",
-                },
-              ].map(({ field, icon, placeholder, type }) => (
-                <div key={field} className="relative group">
-                  <div className={`absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl transition-colors duration-300 ${focusedField === field ? "text-lime-300" : "text-white/50"}`}>
+                { name: "email", type: "email", placeholder: "Email Address", icon: "📧" },
+                { name: "password", type: "password", placeholder: "Password", icon: "🔒" },
+              ].map(({ name, type, placeholder, icon }) => (
+                <div key={name} className="relative">
+                  <span
+                    className={`absolute left-4 top-1/2 -translate-y-1/2 text-2xl transition-colors ${
+                      focusedField === name ? "text-lime-300" : "text-white/50"
+                    }`}
+                  >
                     {icon}
-                  </div>
-                  <input
+                  </span>
+                  <motion.input
+                    whileFocus={{ scale: 1.02 }}
+                    transition={{ duration: 0.2 }}
                     type={type}
-                    name={field}
+                    name={name}
                     placeholder={placeholder}
-                    value={formData[field]}
+                    value={formData[name]}
                     onChange={handleChange}
-                    onFocus={() => setFocusedField(field)}
+                    onFocus={() => setFocusedField(name)}
                     onBlur={() => setFocusedField("")}
-                    className={`w-full pl-16 pr-6 py-4 bg-white/10 border-2 rounded-xl text-white placeholder-white/60 transition-all duration-300 focus:outline-none text-lg ${
-                      focusedField === field
+                    className={`w-full pl-14 pr-5 py-4 rounded-xl text-white bg-white/10 placeholder-white/60 border-2 text-lg transition-all duration-300 focus:outline-none ${
+                      focusedField === name
                         ? "border-lime-400 bg-white/15 shadow-xl shadow-lime-400/20"
                         : "border-white/20 hover:border-lime-400/50"
                     }`}
@@ -137,60 +143,57 @@ export default function Login() {
                   />
                 </div>
               ))}
-              
-              {/* Forgot Password Link */}
-              <div className="text-right pt-1">
-                 <a href="/forgot-password" className="text-sm text-white/70 hover:text-lime-400 transition-colors duration-300">
-                    Forgot Password?
-                 </a>
+
+              <div className="text-right">
+                <a href="/forgot-password" className="text-sm text-white/70 hover:text-lime-400 transition">
+                  Forgot Password?
+                </a>
               </div>
 
-              {/* Submit button */}
-              <button
+              <motion.button
+                whileTap={{ scale: 0.97 }}
                 type="submit"
                 disabled={loading}
-                className={`w-full py-4 rounded-xl font-bold text-xl text-green-950 shadow-xl transition-all duration-300 relative group ${
+                className={`w-full py-4 rounded-xl font-bold text-xl text-green-950 shadow-xl transition-all duration-300 ${
                   loading
                     ? "opacity-70 cursor-not-allowed bg-green-500"
-                    : "bg-gradient-to-r from-lime-400 to-green-300 hover:from-lime-300 hover:to-green-200 hover:scale-[1.01] hover:shadow-2xl hover:shadow-lime-300/40 active:scale-[0.99]"
+                    : "bg-gradient-to-r from-lime-400 to-green-300 hover:from-lime-300 hover:to-green-200 hover:scale-[1.01] hover:shadow-2xl hover:shadow-lime-300/40"
                 }`}
               >
-                <span className="relative z-10 flex items-center justify-center gap-3">
+                <span className="flex items-center justify-center gap-3">
                   {loading ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-green-950 border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-5 h-5 border-2 border-green-950 border-t-transparent rounded-full animate-spin" />
                       Authenticating...
                     </>
                   ) : (
                     "Login Securely"
                   )}
                 </span>
-              </button>
+              </motion.button>
 
               {error && (
-                <div className="text-red-300 text-center bg-red-900/40 p-4 rounded-xl border border-red-500/50 backdrop-blur-md">
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-2xl">🚨</span>
-                    <p className="font-medium">{error}</p>
-                  </div>
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-300 text-center bg-red-900/40 p-4 rounded-xl border border-red-500/50 backdrop-blur-md"
+                >
+                  {error}
+                </motion.div>
               )}
 
-              {/* Bottom link */}
               <div className="text-center pt-8 border-t border-white/10 mt-8">
-                <p className="text-white/80 text-md mb-3">
-                  Don’t have an account?
-                </p>
+                <p className="text-white/80 text-md mb-3">Don’t have an account?</p>
                 <NavLink
                   to="/signup"
                   className="text-lime-400 font-bold text-lg hover:text-green-300 transition-all duration-300 hover:scale-105 inline-block border-b-2 border-lime-400 hover:border-green-300 pb-1"
                 >
-                  🌱 Sign Up for Haryali
+                  🌱 Sign Up for ParaLink
                 </NavLink>
               </div>
             </form>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

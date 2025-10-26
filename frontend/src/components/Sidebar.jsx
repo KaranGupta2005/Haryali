@@ -19,7 +19,7 @@ export default function Sidebar({ links = [], brand = "Haryali" }) {
             }`
           }
         >
-          {link.icon && <span className="mr-1">{link.icon}</span>} {link.name}
+          <span className="mr-1">{link.icon}</span> {link.name}
         </NavLink>
       ))}
       <div className="pt-8 mt-auto text-xs text-green-500 opacity-60">
