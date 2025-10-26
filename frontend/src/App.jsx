@@ -7,6 +7,7 @@ import Features from "./pages/Features";
 import Dashboard from "./features/buyer/Dashboard";
 import Login from "./pages/Login.jsx";
 import SignUp from "./pages/Signup.jsx";
+import DashBoard from "./components/DashBoard.jsx";
 
 function App() {
   return (
@@ -21,7 +22,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/features" element={<Features />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard" element={<DashBoard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
           </Routes>
