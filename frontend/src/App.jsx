@@ -1,11 +1,12 @@
-import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar.jsx";
+import Footer from "./components/Footer.jsx";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Features from "./pages/Features";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./features/buyer/Dashboard";
 import Contact from "./pages/Contact";
+import { useState } from "react";
 
 function App() {
   return (
@@ -14,14 +15,19 @@ function App() {
         {/* Navbar */}
         <Navbar />
 
-        {/* Routes */}
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/features" element={<Features />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
+        {/* Main Content */}
+        <main className="flex-1 mt-24">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/features" element={<Features />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/contact" element={<Contact />} />
+          </Routes>
+        </main>
+
+        {/* Footer */}
+        <Footer />
       </div>
     </Router>
   );
