@@ -1,9 +1,8 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
-if (process.env.NODE_ENV !== 'production') {
-  dotenv.config();
-}
+dotenv.config();
+
 
 const connectToDB=async () => {
   await mongoose.connect(process.env.MONGODB_URL || 'mongodb://127.0.0.1:27017/test');

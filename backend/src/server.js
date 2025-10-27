@@ -1,22 +1,29 @@
-import dotenv from 'dotenv';
-if (process.env.NODE_ENV !== 'production') {
-  dotenv.config();
-}
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+import connectToDB from "./config/db.js";
+import authRoutes from "./routes/authRoutes.js";
 
-import express from 'express';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import connectToDB from './config/db.js';
-import authRoutes from './routes/authRoutes.js';
+// ✅ Proper dotenv path for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const app=express();
-const PORT=process.env.PORT || 5000;
+dotenv.config({ path: path.join(__dirname, ".env") });
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
+console.log("JWT_REFRESH_SECRET:", process.env.JWT_REFRESH_SECRET);
 
-app.use(cors({
-  origin: ["http://localhost:5173"], 
-  credentials: true,
-}));
+const app = express();
+const PORT = process.env.PORT || 5000;
 
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.use(cookieParser());
 app.use(express.json());
@@ -24,21 +31,19 @@ app.use(express.urlencoded({ extended: true }));
 
 await connectToDB();
 
-app.use('/api/auth',authRoutes);
+app.use("/api/auth", authRoutes);
 
-app.get('/', (req, res) => {
-    res.send('Haryali Backend Server is running');
+app.get("/", (req, res) => {
+  res.send("Haryali Backend Server is running 🌿");
 });
 
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
-    message: err.message || 'Internal Server Error'
+    message: err.message || "Internal Server Error",
   });
 });
 
-
-app.listen(PORT,()=>{
-    console.log(`Server is running on port ${PORT}`);
-})
-
+app.listen(PORT, () => {
+  console.log(`✅ Server is running on port ${PORT}`);
+});
 
