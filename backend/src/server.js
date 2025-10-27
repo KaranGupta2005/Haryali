@@ -38,9 +38,9 @@ app.get("/", (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  res.status(err.status || 500).json({
-    message: err.message || "Internal Server Error",
-  });
+  const status = typeof err.status === 'number' ? err.status : 500;
+  const message = typeof err === 'string' ? err : err.message || 'Internal Server Error';
+  res.status(status).json({ message });
 });
 
 app.listen(PORT, () => {

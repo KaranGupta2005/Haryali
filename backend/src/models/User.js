@@ -21,12 +21,12 @@ const userSchema = new Schema(
     role: {
       type: String,
       required: true,
-      enum: ['farmer', 'buyer', 'admin'],
+      enum: ['farmer', 'buyer', 'admin', 'logistics', 'Farmer', 'Buyer', 'Admin', 'Logistics'],
       default: 'farmer',
     },
     refreshTokens: [
       {
-        type: String,
+        token: String,
         createdAt: {
           type: Date,
           default: Date.now,
