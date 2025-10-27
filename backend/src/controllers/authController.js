@@ -110,13 +110,13 @@ export const logout = async (req,res,next)=>{
 
 export const refreshToken = async (req, res, next) => {
   const token = req.cookies?.refreshToken;
-  if (!token) throw new ErrorHandler(401, 'Refresh token missing');
+  if (!token) throw new ExpressError(401, 'Refresh token missing');
   const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
   const user = await User.findById(decoded.userId);
-  if (!user) throw new ErrorHandler(404, 'User not found');
+  if (!user) throw new ExpressError(404, 'User not found');
 
   const found = user.refreshTokens.find(rt => rt.token === token);
-  if (!found) throw new ErrorHandler(401, 'Invalid refresh token');
+  if (!found) throw new ExpressError(401, 'Invalid refresh token');
 
   const accessToken = generateAccessToken(user._id, user.role);
   res.cookie('accessToken', accessToken, { httpOnly: true, sameSite: 'Strict', maxAge: 15*60*1000 });

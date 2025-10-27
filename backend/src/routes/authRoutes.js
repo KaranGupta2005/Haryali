@@ -3,31 +3,36 @@ import {
   signup,
   login,
   logout,
-  refreshToken
+  refreshToken,
 } from '../controllers/authController.js';
 
-import { userAuth, authorize } from '../middlewares/auth.middleware.js';
-import ExpressError from '../middlewares/expressError.js';
+import { userAuth, authorize } from '../middlewares/authMiddleware.js';
+import { validateUser } from '../middlewares/validate.js';
 import { wrapAsync } from '../middlewares/wrapAsync.js';
 
 const router = express.Router();
 
-// Public routes
-router.post('/signup', signup);
-router.post('/login', login);
-router.post('/refresh', refreshToken);
+router.post('/signup', validateUser, wrapAsync(signup));
+router.post('/login', validateUser, wrapAsync(login));
+router.post('/refresh', wrapAsync(refreshToken)); 
 
-// Protected routes
-router.post('/logout', userAuth, logout);
+router.post('/logout', userAuth, wrapAsync(logout)); 
 
-// Example protected route for testing
-router.get('/me', userAuth, (req, res) => {
+router.get('/me', userAuth, wrapAsync((req, res) => {
   res.json({ user: req.user });
-});
+}));
 
-// Example role-based route (optional)
-router.get('/admin', userAuth, authorize(['admin']), (req, res) => {
-  res.json({ message: 'Welcome Admin!' });
-});
+router.get('/farmer', userAuth, authorize(['farmer']), wrapAsync((req, res) => {
+  res.json({ message: 'Welcome Farmer!' });
+}));
+
+router.get('/buyer', userAuth, authorize(['buyer']), wrapAsync((req, res) => {
+  res.json({ message: 'Welcome Buyer!' });
+}));
+
+router.get('/logistics', userAuth, authorize(['logistics']), wrapAsync((req, res) => {
+  res.json({ message: 'Welcome Logistics!' });
+}));
 
 export default router;
+
