@@ -1,13 +1,14 @@
+import dotenv from 'dotenv';
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config();
+}
+
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
 import connectToDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 
-if(process.env.NODE_ENV !== 'production'){
-    dotenv.config();
-}
 const app=express();
 const PORT=process.env.PORT || 5000;
 
