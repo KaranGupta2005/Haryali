@@ -261,9 +261,6 @@ export default function AIPriceYieldPredictor() {
                   </div>
                 </div>
 
-                <div className="mt-4 text-sm font-mono text-emerald-700 bg-white/60 p-3 rounded-md border border-dashed border-emerald-100">
-                  <strong>Formula:</strong> P_final = (B_price × Q) - C_logistics - F_platform
-                </div>
               </motion.div>
             )}
           </motion.section>
@@ -384,9 +381,6 @@ export default function AIPriceYieldPredictor() {
                   </div>
                 </div>
 
-                <div className="mt-4 text-sm font-mono text-emerald-700 bg-white/60 p-3 rounded-md border border-dashed border-emerald-100">
-                  <strong>Formula:</strong> Parali = Crop Yield × Residue Ratio × Area
-                </div>
               </motion.div>
             )}
           </motion.section>
