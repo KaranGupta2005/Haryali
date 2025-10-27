@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { motion } from "motion/react";
+import { motion } from "framer-motion"; // corrected import
 
 export default function Signup() {
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+  });
   const [role, setRole] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,21 +29,39 @@ export default function Signup() {
     e.preventDefault();
     setError("");
     setLoading(true);
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const res = await fetch("http://localhost:5000/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Signup failed!");
+      }
+
       if (role === "Farmer") navigate("/farmer/dashboard");
       else if (role === "Buyer") navigate("/buyer/dashboard");
       else if (role === "Logistics") navigate("/logistics/dashboard");
-      else setError("Select a valid role to continue.");
-    } catch {
-      setError("Signup failed. Please try again.");
+      else navigate("/");
+
+      console.log("Signup success:", data);
+    } catch (err) {
+      console.error(err.message);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
   const inputFields = [
-    { field: "name", placeholder: "Full Name", type: "text" },
+    { field: "fullName", placeholder: "Full Name", type: "text" },
     { field: "email", placeholder: "Email Address", type: "email" },
     { field: "password", placeholder: "Password", type: "password" },
   ];
@@ -49,7 +71,7 @@ export default function Signup() {
       <div
         className={`flex ${isMobile ? "flex-col" : "flex-row"} w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl bg-white/5 backdrop-blur-md border border-white/10`}
       >
-        {/* Left section (image & tagline) */}
+        {/* Left */}
         {!isMobile && (
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -74,7 +96,7 @@ export default function Signup() {
           </motion.div>
         )}
 
-        {/* Right section (form) */}
+        {/* Right */}
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -123,15 +145,10 @@ export default function Signup() {
                   }`}
                   required
                 />
-                <div
-                  className={`absolute inset-0 rounded-2xl bg-gradient-to-r from-green-300/20 to-yellow-200/20 opacity-0 transition-opacity duration-300 pointer-events-none ${
-                    focusedField === field ? "opacity-100" : ""
-                  }`}
-                ></div>
               </div>
             ))}
 
-            {/* Role Dropdown */}
+            {/* Role */}
             <div className="relative group">
               <select
                 value={role}
@@ -158,7 +175,8 @@ export default function Signup() {
             </div>
 
             {/* Submit Button */}
-            <button
+            <motion.button
+              whileTap={{ scale: 0.97 }}
               type="submit"
               disabled={loading}
               className={`w-full py-4 rounded-2xl font-bold text-lg text-white shadow-lg transition-all duration-300 relative overflow-hidden group ${
@@ -170,13 +188,17 @@ export default function Signup() {
               <span className="relative z-10">
                 {loading ? "Creating Your Haryali Account..." : "🌱 Sign Up"}
               </span>
-            </button>
+            </motion.button>
 
             {/* Error Message */}
             {error && (
-              <div className="text-red-200 text-center bg-red-600/20 p-4 rounded-2xl border border-red-400/40 backdrop-blur-md">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-red-200 text-center bg-red-600/20 p-4 rounded-2xl border border-red-400/40 backdrop-blur-md"
+              >
                 {error}
-              </div>
+              </motion.div>
             )}
 
             {/* Footer / Login link */}
