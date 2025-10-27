@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import axios from "axios";
+import { motion } from "motion/react";
 import api from "../api/authApi";
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [focusedField, setFocusedField] = useState("");
   const navigate = useNavigate();
@@ -28,7 +28,8 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await api.post("/auth/login", formData);
+      const res = await api.post("/api/auth/login", formData);
+
       console.log("✅ Logged in:", res.data);
       navigate("/dashboard");
     } catch (err) {
@@ -40,6 +41,21 @@ export default function Login() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    setLogoutLoading(true);
+    setError("");
+    try {
+      await api.post("/api/auth/logout");
+      navigate("/login");
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Logout failed. Please try again."
+      );
+    } finally {
+      setLogoutLoading(false);
     }
   };
 
@@ -198,13 +214,38 @@ export default function Login() {
                   to="/signup"
                   className="text-lime-400 font-bold text-lg hover:text-green-300 transition-all duration-300 hover:scale-105 inline-block border-b-2 border-lime-400 hover:border-green-300 pb-1"
                 >
-                  🌱 Sign Up for ParaLink
+                  🌱 Sign Up for Haryali
                 </NavLink>
               </div>
             </form>
+
+            {/* Logout Button */}
+            <div className="mt-12 flex flex-col items-center">
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                type="button"
+                disabled={logoutLoading}
+                onClick={handleLogout}
+                className={`w-full max-w-xs py-3 rounded-xl font-bold text-lg text-white shadow-xl transition-all duration-300 ${
+                  logoutLoading
+                    ? "opacity-60 cursor-not-allowed bg-red-900"
+                    : "bg-gradient-to-r from-red-600 to-red-400 hover:from-red-500 hover:to-red-300 hover:scale-[1.01] hover:shadow-2xl hover:shadow-red-300/40"
+                }`}
+              >
+                {logoutLoading ? (
+                  <>
+                    <div className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                    Logging out...
+                  </>
+                ) : (
+                  "Logout"
+                )}
+              </motion.button>
+            </div>
           </div>
         </motion.div>
       </div>
     </div>
   );
 }
+
