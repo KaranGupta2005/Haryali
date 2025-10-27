@@ -16,6 +16,7 @@
     "@react-three/drei": "^10.7.6",
     "@shadcn/ui": "^0.0.4",
     "@tailwindcss/vite": "^4.1.16",
+    "axios": "^1.12.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.548.0",

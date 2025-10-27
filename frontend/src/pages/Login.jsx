@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import axios from "axios";
+import api from "../api/authApi";
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -8,6 +10,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [focusedField, setFocusedField] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768);
@@ -23,11 +26,18 @@ export default function Login() {
     e.preventDefault();
     setError("");
     setLoading(true);
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-      console.log("Login data:", formData);
-    } catch {
-      setError("Login failed. Please check your credentials.");
+      const res = await api.post("/auth/login", formData);
+      console.log("✅ Logged in:", res.data);
+      navigate("/dashboard");
+    } catch (err) {
+      console.error(err);
+      if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("Login failed. Please check your credentials.");
+      }
     } finally {
       setLoading(false);
     }
@@ -35,7 +45,7 @@ export default function Login() {
 
   return (
     <div className="relative min-h-screen font-sans overflow-hidden">
-      {/* Animated Gradient Background */}
+      {/* Animated Background */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -110,6 +120,7 @@ export default function Login() {
               </p>
             </div>
 
+            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
               {[
                 { name: "email", type: "email", placeholder: "Email Address", icon: "📧" },
