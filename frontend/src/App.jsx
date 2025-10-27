@@ -5,6 +5,8 @@ import Home from "./pages/Home.jsx";
 import About from "./pages/About.jsx";
 import Features from "./pages/Features.jsx";
 import FarmerDashboard from "./features/farmer/Dashboard.jsx";
+import PricePredictor from "./features/farmer/pricePredictor.jsx";
+import ParaliClassifier from "./features/farmer/paraliClassifier.jsx";
 import BuyerDashboard from "./features/buyer/Dashboard.jsx";
 import LogisticsDashboard from "./features/logistics/Dashboard.jsx";
 import Login from "./pages/Login.jsx";
@@ -28,6 +30,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/farmer/dashboard" element={<FarmerDashboard />} />
+            <Route path="/farmer/pricePredictor" element={<PricePredictor />} />
+            <Route path="/farmer/paraliClassifier" element={<ParaliClassifier />} />
             <Route path="/buyer/dashboard" element={<BuyerDashboard />} />
             <Route path="/logistics/dashboard" element={<LogisticsDashboard />} />
           </Routes>

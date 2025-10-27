@@ -6,8 +6,9 @@ export default function FarmerDashboard() {
       userName="Farmer Aman"
       sidebarLinks={[
         { name: "Dashboard", path: "/farmer/dashboard" },
-        { name: "My Goods", path: "/farmer/goods" },
-        { name: "Add Biomass", path: "/farmer/add-biomass" }
+        { name: "List Goods", path: "/farmer/goods" },
+        { name: "AI Price Predictor", path: "/farmer/pricePredictor" },
+        { name: "Parali Classifier", path: "/farmer/paraliClassifier" },
       ]}
       summaryCards={[
         { title: "Active Deliveries", value: 3 },
