@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion"; // corrected import
+import { motion } from "motion/react"; 
+import api from "../api/authApi";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -31,20 +32,11 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(formData),
-      });
+      const payload = { ...formData, role }; // include role in request body
+      const res = await api.post("/api/auth/signup", payload); // using axios instance
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Signup failed!");
-      }
+      // axios throws on non-2xx so no need to check res.ok
+      const data = res.data;
 
       if (role === "Farmer") navigate("/farmer/dashboard");
       else if (role === "Buyer") navigate("/buyer/dashboard");
@@ -53,8 +45,13 @@ export default function Signup() {
 
       console.log("Signup success:", data);
     } catch (err) {
-      console.error(err.message);
-      setError(err.message);
+      // axios error handling
+      const msg =
+        err.response?.data?.message ||
+        err.message ||
+        "Signup failed with unknown error";
+      console.error(msg);
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -69,7 +66,9 @@ export default function Signup() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-700 via-lime-700 to-green-900 p-4">
       <div
-        className={`flex ${isMobile ? "flex-col" : "flex-row"} w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl bg-white/5 backdrop-blur-md border border-white/10`}
+        className={`flex ${
+          isMobile ? "flex-col" : "flex-row"
+        } w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl bg-white/5 backdrop-blur-md border border-white/10`}
       >
         {/* Left */}
         {!isMobile && (
