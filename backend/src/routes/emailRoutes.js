@@ -3,9 +3,6 @@ import {
   saveEmail,
   sendNewsletterEmail,
   saveContactMessage,
-  getAllContactMessages,
-  updateContactMessageStatus,
-  deleteContactMessage,
 } from "../controllers/emailController.js";
 import { userAuth, authorize } from "../middlewares/authMiddleware.js";
 import { wrapAsync } from "../middlewares/wrapAsync.js";
@@ -26,27 +23,6 @@ router.post(
   authorize(["admin"]),
   validateNewsletter,
   wrapAsync(sendNewsletterEmail)
-);
-
-router.get(
-  "/contact-messages",
-  userAuth,
-  authorize(["admin"]),
-  wrapAsync(getAllContactMessages)
-);
-
-router.patch(
-  "/contact-messages/:id",
-  userAuth,
-  authorize(["admin"]),
-  wrapAsync(updateContactMessageStatus)
-);
-
-router.delete(
-  "/contact-messages/:id",
-  userAuth,
-  authorize(["admin"]),
-  wrapAsync(deleteContactMessage)
 );
 
 export default router;

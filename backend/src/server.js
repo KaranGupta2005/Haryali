@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import connectToDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
+import emailRoutes from "./routes/emailRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,14 +34,21 @@ await connectToDB();
 
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/email", emailRoutes);
 
 app.get("/", (req, res) => {
   res.send("Haryali Backend Server is running 🌿");
 });
 
 app.use((err, req, res, next) => {
-  const status = typeof err.status === 'number' ? err.status : 500;
-  const message = typeof err === 'string' ? err : err.message || 'Internal Server Error';
+  const status = typeof err.status === "number" ? err.status : 500;
+  const message =
+    typeof err === "string" ? err : err.message || "Internal Server Error";
+
+  if (res.headersSent) {
+    return next(err);
+  }
+
   res.status(status).json({ message });
 });
 
