@@ -8,20 +8,35 @@ import {
 } from '../utils/generateToken.js';
 import ExpressError from '../middlewares/expressError.js';
 
+// Signup
 export const signup = async (req, res, next) => {
   try {
     const { fullName, email, password, role } = req.body;
-    const exists = await User.findOne({ email });
-    if (exists) throw new ExpressError(400, 'User with this email already exists');
 
-    const hashed = await bcrypt.hash(password, 10);
-    const newUser = new User({ fullName, email, password: hashed, role });
+    if (!fullName || !email || !password) {
+      throw new ExpressError(400, 'Full name, email, and password are required');
+    }
+
+    const exists = await User.findOne({ email: email.toLowerCase() });
+    if (exists) {
+      throw new ExpressError(400, 'User with this email already exists');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({ 
+      fullName: fullName.trim(), 
+      email: email.toLowerCase().trim(), 
+      password: hashedPassword, 
+      role: role ? role.toLowerCase() : 'farmer'
+    });
+    
     await newUser.save();
 
     const accessToken = generateAccessToken(newUser._id, newUser.role);
     const refreshToken = generateRefreshToken(newUser._id);
 
-    newUser.refreshTokens.push({ token: refreshToken, createdAt: new Date() });
+    newUser.refreshTokens.push({ token: refreshToken });
     await newUser.save();
 
     setAuthCookies(res, accessToken, refreshToken);
@@ -40,39 +55,36 @@ export const signup = async (req, res, next) => {
   }
 };
 
-export const login = async (req, res) => {
+// Login
+export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select('+password');
+    if (!email || !password) {
+      throw new ExpressError(400, 'Email and password are required');
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+    
     if (!user) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+      throw new ExpressError(400, 'Invalid email or password');
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+      throw new ExpressError(400, 'Invalid email or password');
     }
 
-    const accessToken = jwt.sign(
-      { userId: user._id, role: user.role },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: '15m' }
-    );
-
-    const refreshToken = jwt.sign(
-      { userId: user._id },
-      process.env.REFRESH_TOKEN_SECRET,
-      { expiresIn: '7d' }
-    );
+    const accessToken = generateAccessToken(user._id, user.role);
+    const refreshToken = generateRefreshToken(user._id);
 
     user.refreshTokens.push({ token: refreshToken });
     await user.save();
 
+    setAuthCookies(res, accessToken, refreshToken);
+
     res.status(200).json({
       message: 'Login successful',
-      accessToken,
-      refreshToken,
       user: {
         id: user._id,
         fullName: user.fullName,
@@ -80,25 +92,39 @@ export const login = async (req, res) => {
         role: user.role,
       },
     });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error during login' });
+  } catch (err) {
+    next(err);
   }
 };
 
+// Logout
 export const logout = async (req, res, next) => {
   try {
-    const user = req.user;
     const refreshToken = req.cookies?.refreshToken;
-    if (!refreshToken) return next(new ExpressError(401, 'Unauthorized'));
+    
+    if (!refreshToken) {
+      throw new ExpressError(401, 'Unauthorized: No refresh token');
+    }
 
-    if (refreshToken && user) {
+    const user = await User.findOne({ 'refreshTokens.token': refreshToken });
+    
+    if (user) {
       user.refreshTokens = user.refreshTokens.filter(rt => rt.token !== refreshToken);
       await user.save();
     }
 
-    res.clearCookie('accessToken', { path: '/' });
-    res.clearCookie('refreshToken', { path: '/' });
+    res.clearCookie('accessToken', { 
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
+    res.clearCookie('refreshToken', { 
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
 
     res.status(200).json({ message: 'Logged out successfully' });
   } catch (err) {
@@ -109,21 +135,26 @@ export const logout = async (req, res, next) => {
 export const refreshToken = async (req, res, next) => {
   try {
     const token = req.cookies?.refreshToken;
-    if (!token) throw new ExpressError(401, 'Refresh token missing');
+    
+    if (!token) {
+      throw new ExpressError(401, 'Refresh token missing');
+    }
 
     const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    
     const user = await User.findById(decoded.userId);
-    if (!user) throw new ExpressError(404, 'User not found');
+    if (!user) {
+      throw new ExpressError(404, 'User not found');
+    }
 
     const found = user.refreshTokens.find(rt => rt.token === token);
-    if (!found) throw new ExpressError(401, 'Invalid refresh token');
+    if (!found) {
+      throw new ExpressError(401, 'Invalid refresh token');
+    }
 
-    const accessToken = generateAccessToken(user._id, user.role);
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      sameSite: 'Strict',
-      maxAge: 15 * 60 * 1000,
-    });
+    const newAccessToken = generateAccessToken(user._id, user.role);
+    
+    setAuthCookies(res, newAccessToken, token);
 
     res.json({ message: 'Token refreshed' });
   } catch (err) {
