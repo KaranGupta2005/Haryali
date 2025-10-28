@@ -8,8 +8,8 @@ export default function Signup() {
     fullName: "",
     email: "",
     password: "",
+    role: "",
   });
-  const [role, setRole] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -32,25 +32,29 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      const payload = { ...formData, role }; // include role in request body
-      const res = await api.post("/api/auth/signup", payload); // using axios instance
+      const res = await api.post("/api/auth/signup", formData);
 
-      // axios throws on non-2xx so no need to check res.ok
-      const data = res.data;
-
-      if (role === "Farmer") navigate("/farmer/dashboard");
-      else if (role === "Buyer") navigate("/buyer/dashboard");
-      else if (role === "Logistics") navigate("/logistics/dashboard");
-      else navigate("/");
-
-      console.log("Signup success:", data);
+      console.log("✅ Signup success:", res.data);
+      
+      const userRole = res.data.user.role;
+      
+      if (userRole === "farmer") {
+        navigate("/farmer/dashboard");
+      } else if (userRole === "buyer") {
+        navigate("/buyer/dashboard");
+      } else if (userRole === "logistics") {
+        navigate("/logistics/dashboard");
+      } else if (userRole === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
-      // axios error handling
+      console.error(err);
       const msg =
         err.response?.data?.message ||
         err.message ||
-        "Signup failed with unknown error";
-      console.error(msg);
+        "Signup failed. Please try again.";
       setError(msg);
     } finally {
       setLoading(false);
@@ -150,21 +154,22 @@ export default function Signup() {
             {/* Role */}
             <div className="relative group">
               <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
                 className="w-full px-5 py-4 rounded-2xl bg-white/10 text-white border-2 border-white/20 focus:border-green-400 transition-all duration-300 appearance-none cursor-pointer backdrop-blur-md focus:bg-white/15 hover:border-green-300/50"
                 required
               >
                 <option value="" className="bg-gray-800 text-white">
                   Select Your Role
                 </option>
-                <option value="Farmer" className="bg-gray-800 text-white">
+                <option value="farmer" className="bg-gray-800 text-white">
                   Farmer
                 </option>
-                <option value="Buyer" className="bg-gray-800 text-white">
+                <option value="buyer" className="bg-gray-800 text-white">
                   Buyer
                 </option>
-                <option value="Logistics" className="bg-gray-800 text-white">
+                <option value="logistics" className="bg-gray-800 text-white">
                   Logistics
                 </option>
               </select>
@@ -200,7 +205,7 @@ export default function Signup() {
               </motion.div>
             )}
 
-            {/* Footer / Login link */}
+            {/* Login Link*/}
             <div className="text-center pt-6 border-t border-white/10">
               <p className="text-white/70 text-sm mb-3">
                 Already have an account?

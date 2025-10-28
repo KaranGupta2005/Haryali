@@ -7,7 +7,6 @@ export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [logoutLoading, setLogoutLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [focusedField, setFocusedField] = useState("");
   const navigate = useNavigate();
@@ -31,7 +30,20 @@ export default function Login() {
       const res = await api.post("/api/auth/login", formData);
 
       console.log("✅ Logged in:", res.data);
-      navigate("/dashboard");
+      
+      const userRole = res.data.user.role;
+      
+      if (userRole === "farmer") {
+        navigate("/farmer/dashboard");
+      } else if (userRole === "buyer") {
+        navigate("/buyer/dashboard");
+      } else if (userRole === "logistics") {
+        navigate("/logistics/dashboard");
+      } else if (userRole === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       console.error(err);
       if (err.response?.data?.message) {
@@ -41,21 +53,6 @@ export default function Login() {
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    setLogoutLoading(true);
-    setError("");
-    try {
-      await api.post("/api/auth/logout");
-      navigate("/login");
-    } catch (err) {
-      setError(
-        err.response?.data?.message || "Logout failed. Please try again."
-      );
-    } finally {
-      setLogoutLoading(false);
     }
   };
 
@@ -109,10 +106,10 @@ export default function Login() {
               className="flex-1 flex flex-col items-center justify-center p-12 bg-gradient-to-br from-green-800/70 to-lime-700/60 border-r border-white/20"
             >
               <div className="mb-8 p-4 rounded-full bg-black/20 border border-white/30">
-                <img src="/leaf.png" alt="ParaLink" className="w-28 h-28 rounded-full" />
+                <img src="/leaf.png" alt="Haryali" className="w-28 h-28 rounded-full" />
               </div>
               <h3 className="text-white text-3xl font-extrabold mb-3 tracking-tight">
-                ParaLink Platform
+                Haryali Platform
               </h3>
               <p className="text-white/80 text-lg text-center max-w-sm font-light">
                 Empowering farmers and industries through sustainable connections.
@@ -209,7 +206,7 @@ export default function Login() {
               )}
 
               <div className="text-center pt-8 border-t border-white/10 mt-8">
-                <p className="text-white/80 text-md mb-3">Don’t have an account?</p>
+                <p className="text-white/80 text-md mb-3">Don't have an account?</p>
                 <NavLink
                   to="/signup"
                   className="text-lime-400 font-bold text-lg hover:text-green-300 transition-all duration-300 hover:scale-105 inline-block border-b-2 border-lime-400 hover:border-green-300 pb-1"
@@ -218,34 +215,9 @@ export default function Login() {
                 </NavLink>
               </div>
             </form>
-
-            {/* Logout Button */}
-            <div className="mt-12 flex flex-col items-center">
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                type="button"
-                disabled={logoutLoading}
-                onClick={handleLogout}
-                className={`w-full max-w-xs py-3 rounded-xl font-bold text-lg text-white shadow-xl transition-all duration-300 ${
-                  logoutLoading
-                    ? "opacity-60 cursor-not-allowed bg-red-900"
-                    : "bg-gradient-to-r from-red-600 to-red-400 hover:from-red-500 hover:to-red-300 hover:scale-[1.01] hover:shadow-2xl hover:shadow-red-300/40"
-                }`}
-              >
-                {logoutLoading ? (
-                  <>
-                    <div className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    Logging out...
-                  </>
-                ) : (
-                  "Logout"
-                )}
-              </motion.button>
-            </div>
           </div>
         </motion.div>
       </div>
     </div>
   );
 }
-
