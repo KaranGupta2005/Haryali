@@ -13,6 +13,7 @@ import LogisticsDashboard from "./features/logistics/Dashboard.jsx";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import ChatBot from "./components/chatBot.jsx";
 
 function App() {
   return (
@@ -125,6 +126,8 @@ function App() {
             <Route path="*" element={<Home />} />
           </Routes>
         </main>
+
+        <ChatBot className="fixed bottom-0 right-0 m-4 z-100" />
 
         <Footer />
       </div>
