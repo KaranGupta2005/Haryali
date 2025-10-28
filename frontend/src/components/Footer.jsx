@@ -1,31 +1,60 @@
-import React from "react";
+import React, { useState } from "react";
 import { Facebook, Instagram, Twitter, Phone, Mail } from "lucide-react";
 
 export default function Footer() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const socials = [
-    {
-      name: "Facebook",
-      icon: <Facebook size={20} />,
-      href: "#", 
-      color: "hover:text-lime-300",
-    },
-    {
-      name: "Instagram",
-      icon: <Instagram size={20} />,
-      href: "#",
-      color: "hover:text-emerald-300",
-    },
-    {
-      name: "X",
-      icon: <Twitter size={20} />,
-      href: "#",
-      color: "hover:text-green-200",
-    },
+    { name: "Facebook", icon: <Facebook size={20} />, href: "#", color: "hover:text-lime-300" },
+    { name: "Instagram", icon: <Instagram size={20} />, href: "#", color: "hover:text-emerald-300" },
+    { name: "X", icon: <Twitter size={20} />, href: "#", color: "hover:text-green-200" },
   ];
+
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus(null);
+    setErrorMessage("");
+
+    if (!name.trim()) {
+      setErrorMessage("Name is required.");
+      setStatus("error");
+      return;
+    }
+    if (!validateEmail(email)) {
+      setErrorMessage("Please enter a valid email.");
+      setStatus("error");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/email/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setStatus("success");
+        setName("");
+        setEmail("");
+      } else {
+        setErrorMessage(data.message || "Subscription failed.");
+        setStatus("error");
+      }
+    } catch (error) {
+      setErrorMessage("Network error. Please try again.");
+      setStatus("error");
+    }
+  };
 
   return (
     <footer className="w-full bg-gradient-to-br from-green-950 via-emerald-900 to-green-800 text-green-100 pt-12 pb-8 relative z-50 font-sans border-t border-green-700/40">
-      
       {/* Logo & Tagline */}
       <div className="flex flex-col items-center mx-auto text-center px-4">
         <div className="flex items-center gap-3">
@@ -45,7 +74,6 @@ export default function Footer() {
 
       {/* Main Footer Grid */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 mt-12 px-6">
-
         {/* Quick Links */}
         <div>
           <h3 className="text-xl font-semibold text-lime-300 mb-4 border-b border-green-700 pb-2">
@@ -54,10 +82,7 @@ export default function Footer() {
           <ul className="space-y-3 text-base">
             {["Home", "About", "Features", "Dashboard", "Contact"].map((link) => (
               <li key={link}>
-                <a
-                  href="#"
-                  className="hover:text-emerald-300 transition duration-200"
-                >
+                <a href="#" className="hover:text-emerald-300 transition duration-200">
                   {link}
                 </a>
               </li>
@@ -96,7 +121,10 @@ export default function Footer() {
               <Phone size={18} className="text-lime-400" /> +91 98765 43210
             </p>
             <p className="flex items-center gap-2">
-              <Mail size={18} className="text-lime-400" /> contact@haryali.in
+              <Mail size={18} className="text-lime-400" />{" "}
+              <a href="mailto:contact@haryali.in" className="hover:underline">
+                contact@haryali.in
+              </a>
             </p>
           </div>
           <p className="text-base mt-4 leading-6 text-emerald-200">
@@ -112,16 +140,22 @@ export default function Footer() {
           <p className="text-base mb-3 text-emerald-200">
             Subscribe for latest updates on sustainable farming & green tech.
           </p>
-          <form className="flex flex-col gap-3">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3" noValidate>
             <input
               type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Your Name"
               className="px-3 py-3 bg-green-800/60 rounded-lg text-base text-white placeholder-emerald-200 focus:outline-none focus:ring-2 focus:ring-lime-400"
+              required
             />
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Your Email"
               className="px-3 py-3 bg-green-800/60 rounded-lg text-base text-white placeholder-emerald-200 focus:outline-none focus:ring-2 focus:ring-lime-400"
+              required
             />
             <button
               type="submit"
@@ -129,11 +163,15 @@ export default function Footer() {
             >
               Subscribe
             </button>
+            {status === "success" && (
+              <p className="text-lime-300">Thank you {name}! You’ve been subscribed successfully 🎉</p>
+            )}
+            {status === "error" && <p className="text-red-500">{errorMessage}</p>}
           </form>
         </div>
       </div>
 
-      {/* Footer Bottom */}
+      {/* Footer */}
       <div className="border-t border-green-700 mt-12 pt-5 text-center text-sm lg:text-base text-emerald-200">
         <p>&copy; {new Date().getFullYear()} Haryali. All rights reserved.</p>
         <p className="mt-1">Crafted with 💚 by Team Haryali</p>
