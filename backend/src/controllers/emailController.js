@@ -1,5 +1,5 @@
-import Email from "../models/emailModel.js";
-import ContactMessage from "../models/contactMessageModel.js";
+import Email from "../models/Email.js";
+import ContactMessage from "../models/contactMessage.js";
 import ExpressError from "../middlewares/expressError.js";
 import nodeMailer from "nodemailer";
 
