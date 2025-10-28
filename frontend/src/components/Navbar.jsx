@@ -1,15 +1,39 @@
 import { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import api from "../api/authApi";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  const checkAuth = async () => {
+    try {
+      const res = await api.get("/api/auth/me");
+      setIsAuthenticated(true);
+      setUser(res.data.user);
+    } catch {
+      setIsAuthenticated(false);
+      setUser(null);
+    }
+  };
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+    checkAuth();
+
+    const handleAuthChange = () => checkAuth();
+    window.addEventListener("authChange", handleAuthChange);
+
+    return () => {
+      window.removeEventListener("authChange", handleAuthChange);
     };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -21,14 +45,44 @@ export default function Navbar() {
     };
   }, [mobileOpen]);
 
-  const navLinks = [
+  const handleLogout = async () => {
+    try {
+      await api.post("/api/auth/logout");
+      setIsAuthenticated(false);
+      setUser(null);
+      localStorage.removeItem("accessToken");
+
+      window.dispatchEvent(new Event("authChange"));
+
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      navigate("/login");
+    }
+  };
+
+  const publicLinks = [
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
     { name: "Features", path: "/features" },
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Login", path: "/login" },
-    { name: "Sign Up", path: "/signup" },
   ];
+
+  const authLinks = isAuthenticated
+    ? [
+        ...publicLinks,
+        {
+          name: "Dashboard",
+          path:
+            user?.role === "farmer"
+              ? "/farmer/dashboard"
+              : user?.role === "buyer"
+              ? "/buyer/dashboard"
+              : user?.role === "logistics"
+              ? "/logistics/dashboard"
+              : "/dashboard",
+        },
+      ]
+    : publicLinks;
 
   const baseLink =
     "relative px-4 py-2 text-green-100 hover:text-white after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-gradient-to-r after:from-lime-300 after:to-emerald-400 after:rounded-full after:scale-x-0 after:origin-left hover:after:scale-x-100 after:transition-transform after:duration-300 transition-all duration-200 text-lg lg:text-xl tracking-wide font-medium";
@@ -82,7 +136,7 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-2 lg:gap-5">
-          {navLinks.map(({ name, path }) => (
+          {authLinks.map(({ name, path }) => (
             <NavLink
               key={name}
               to={path}
@@ -97,6 +151,31 @@ export default function Navbar() {
               {name}
             </NavLink>
           ))}
+
+          {/* Auth Buttons */}
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              className="ml-2 px-6 py-2.5 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200"
+            >
+              Logout
+            </button>
+          ) : (
+            <>
+              <NavLink
+                to="/login"
+                className="ml-2 px-6 py-2.5 bg-gradient-to-r from-lime-500 to-green-500 hover:from-lime-400 hover:to-green-400 text-green-950 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200"
+              >
+                Login
+              </NavLink>
+              <NavLink
+                to="/signup"
+                className="px-6 py-2.5 border-2 border-lime-400 hover:border-lime-300 text-lime-400 hover:text-white hover:bg-lime-400/10 font-semibold rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200"
+              >
+                Sign Up
+              </NavLink>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -127,7 +206,7 @@ export default function Navbar() {
         }`}
       >
         <div className="px-6 py-6 space-y-2">
-          {navLinks.map(({ name, path }, index) => (
+          {authLinks.map(({ name, path }, index) => (
             <NavLink
               key={name}
               to={path}
@@ -149,9 +228,47 @@ export default function Navbar() {
               {name}
             </NavLink>
           ))}
+
+          {/* Mobile Auth Buttons */}
+          <div className="pt-4 space-y-3 border-t border-green-700/40 mt-4">
+            {isAuthenticated ? (
+              <>
+                <div className="text-lime-300 text-sm px-4 py-2">
+                  Logged in as{" "}
+                  <span className="font-semibold">{user?.fullName}</span>
+                </div>
+                <button
+                  onClick={() => {
+                    setMobileOpen(false);
+                    handleLogout();
+                  }}
+                  className="w-full text-xl py-3 px-4 rounded-lg bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold hover:from-red-500 hover:to-red-400 transition-all duration-200"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <NavLink
+                  to="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="block text-xl py-3 px-4 rounded-lg bg-gradient-to-r from-lime-500 to-green-500 text-green-950 font-semibold text-center hover:from-lime-400 hover:to-green-400 transition-all duration-200"
+                >
+                  Login
+                </NavLink>
+                <NavLink
+                  to="/signup"
+                  onClick={() => setMobileOpen(false)}
+                  className="block text-xl py-3 px-4 rounded-lg border-2 border-lime-400 text-lime-400 font-semibold text-center hover:bg-lime-400/10 transition-all duration-200"
+                >
+                  Sign Up
+                </NavLink>
+              </>
+            )}
+          </div>
         </div>
       </div>
-
+      
       <style>{`
         @keyframes slideIn {
           from {
@@ -167,4 +284,6 @@ export default function Navbar() {
     </nav>
   );
 }
+
+
 
