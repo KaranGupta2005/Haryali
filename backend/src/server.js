@@ -6,8 +6,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import connectToDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
-// ✅ Proper dotenv path for ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -32,6 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 await connectToDB();
 
 app.use("/api/auth", authRoutes);
+app.use("/api/chat", chatRoutes);
 
 app.get("/", (req, res) => {
   res.send("Haryali Backend Server is running 🌿");
