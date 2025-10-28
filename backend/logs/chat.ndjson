@@ -76,3 +76,9 @@
 {"timestamp":"2025-10-28T07:12:39.804Z","user":"music","bot":"मैं हरियाली और सतत पाराली प्रबंधन में विशेषज्ञ हूँ—क्या हम इस विषय पर चर्चा करें?","role":null,"lang":"hi","model":"openai/gpt-oss-20b"}
 {"timestamp":"2025-10-28T07:12:44.384Z","user":"sto[","bot":"कृपया स्पष्ट करें कि आप क्या पूछना चाहते हैं?","role":null,"lang":"hi","model":"openai/gpt-oss-20b"}
 {"timestamp":"2025-10-28T07:12:46.947Z","user":"top","bot":"कृपया स्पष्ट करें कि आप किस विषय पर जानकारी चाहते हैं?","role":null,"lang":"hi","model":"openai/gpt-oss-20b"}
+{"timestamp":"2025-10-28T10:11:23.788Z","user":"hi","bot":"Please tell me your preferred language: Hindi, Hinglish, or English.","role":null,"lang":"en","model":"openai/gpt-oss-20b"}
+{"timestamp":"2025-10-28T10:11:28.482Z","user":"Hindi","bot":"नमस्ते! आप किस भूमिका में हैं—किसान, खरीदार, लॉजिस्टिक्स, एडमिन, या एमएल? (कृपया बताइए ताकि मैं आपकी सहायता कर सकूँ।)","role":null,"lang":"en","model":"openai/gpt-oss-20b"}
+{"timestamp":"2025-10-28T10:11:57.637Z","user":"hello Hariyali is site ke dwara Mein kya-kya chijen kar sakta hun","bot":"कृपया बताइए आपकी पसंदीदा भाषा कौन सी है: Hindi, Hinglish, या English?","role":null,"lang":"hi","model":"openai/gpt-oss-20b"}
+{"timestamp":"2025-10-28T10:12:10.649Z","user":"hindi","bot":"कृपया बताइए आप किस भूमिका में हैं?  \n- किसान  \n- खरीदार  \n- लॉजिस्टिक्स  \n- एडमिन  \n- ML  \n\nआपका जवाब देने के बाद मैं आपकी मदद करूँगा।","role":null,"lang":"hi","model":"openai/gpt-oss-20b"}
+{"timestamp":"2025-10-28T10:12:23.345Z","user":"kisan","bot":"नमस्ते! मैं ...Haryali... AI सहायक हूँ। आप किसान हैं, सही?","role":null,"lang":"hi","model":"openai/gpt-oss-20b"}
+{"timestamp":"2025-10-28T10:12:31.604Z","user":"hn","bot":"कृपया अपनी पसंदीदा भाषा बताइए: Hindi, Hinglish, या English?","role":null,"lang":"hi","model":"openai/gpt-oss-20b"}
