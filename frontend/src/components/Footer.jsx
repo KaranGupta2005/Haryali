@@ -6,6 +6,7 @@ export default function Footer() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const socials = [
     { name: "Facebook", icon: <Facebook size={20} />, href: "#", color: "hover:text-lime-300" },
@@ -32,6 +33,7 @@ export default function Footer() {
     }
 
     try {
+      setLoading(true);
       const res = await fetch("http://localhost:5000/api/email/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -50,6 +52,8 @@ export default function Footer() {
     } catch (error) {
       setErrorMessage("Network error. Please try again.");
       setStatus("error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -159,12 +163,44 @@ export default function Footer() {
             />
             <button
               type="submit"
-              className="bg-lime-400 hover:bg-lime-500 text-black text-base py-3 rounded-lg transition"
+              disabled={loading}
+              className={`bg-lime-400 hover:bg-lime-500 text-black text-base py-3 rounded-lg transition flex justify-center items-center gap-2 ${
+                loading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              Subscribe
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 text-black"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
+                  </svg>
+                  Sending...
+                </>
+              ) : (
+                "Subscribe"
+              )}
             </button>
+
             {status === "success" && (
-              <p className="text-lime-300">Thank you {name}! You’ve been subscribed successfully 🎉</p>
+              <p className="text-lime-300">
+                Thank you {name}! You’ve been subscribed successfully 🎉
+              </p>
             )}
             {status === "error" && <p className="text-red-500">{errorMessage}</p>}
           </form>
