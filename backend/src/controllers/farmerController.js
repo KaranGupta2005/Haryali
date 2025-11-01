@@ -15,30 +15,27 @@ export const getAllListings = async (req, res) => {
 };
 
 export const getMarketplaceListings = async (req, res) => {
-  
-    const listings = await ParaliListing.find({
-      isListedForMarketplace: true,
-      status: { $ne: "Sold" },
-    }).sort({ createdAt: -1 });
-    res.status(200).json({ listings });
-  
+  const listings = await Parali.find({
+    isListedForMarketplace: true,
+    status: { $ne: "Sold" },
+  }).sort({ createdAt: -1 });
+
+  res.status(200).json({ count: listings.length, listings });
 };
 
 export const listForMarketplace = async (req, res) => {
-  
-    const { id } = req.params;
-    const listing = await ParaliListing.findByIdAndUpdate(
-      id,
-      { isListedForMarketplace: true, status: "Listed" },
-      { new: true }
-    );
-    if (!listing)
-      return res.status(404).json({ message: "Listing not found" });
+  const { id } = req.params;
+  const listing = await Parali.findByIdAndUpdate(
+    id,
+    { isListedForMarketplace: true, status: "Listed" },
+    { new: true }
+  );
 
-    res.status(200).json({
-      message: "Listing successfully added to marketplace",
-      listing,
-    });
-  
+  if (!listing)
+    return res.status(404).json({ message: "Listing not found" });
+
+  res.status(200).json({
+    message: "✅ Listing successfully added to marketplace",
+    listing,
+  });
 };
-

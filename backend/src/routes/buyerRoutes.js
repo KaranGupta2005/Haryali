@@ -10,9 +10,9 @@ import { validateBuyer } from "../middlewares/validate.js";
 const router = express.Router();
 
 router.post("/", validateBuyer, wrapAsync(placeOrder));
-
 router.get("/", wrapAsync(getBuyerOrders));
-
 router.put("/:id/status", wrapAsync(updateOrderStatus));
 
 export default router;
+
+

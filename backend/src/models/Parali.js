@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const paraliListingSchema = new mongoose.Schema(
+const paraliSchema = new mongoose.Schema(
   {
     farmerName: { type: String, required: true },
     location: { type: String, required: true },
@@ -9,23 +9,21 @@ const paraliListingSchema = new mongoose.Schema(
       enum: ["Standing Stubble", "Loose Straw"],
       required: true,
     },
-    quantity: { type: Number, required: true }, 
+    quantity: { type: Number, required: true }, // tons
     contact: { type: String, required: true },
-    proposedPrice: { type: Number, required: false },
-    predictedPrice: { type: Number, required: false },
+    proposedPrice: { type: Number },
+    predictedPrice: { type: Number },
     status: {
       type: String,
       enum: ["Pending", "Listed", "Sold"],
       default: "Pending",
     },
-    isListedForMarketplace: {
-      type: Boolean,
-      default: false, 
-    },
+    isListedForMarketplace: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
-export default mongoose.model("Parali", paraliListingSchema);
+export default mongoose.model("Parali", paraliSchema);
+
 
 

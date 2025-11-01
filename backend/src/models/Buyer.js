@@ -23,3 +23,4 @@ const buyerSchema = new mongoose.Schema(
 );
 
 export default mongoose.model("Buyer", buyerSchema);
+
