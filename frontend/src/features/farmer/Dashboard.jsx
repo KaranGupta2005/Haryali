@@ -1,24 +1,43 @@
 import { useEffect, useState } from "react";
 import DashBoard from "../../components/DashBoard";
 import api from "../../api/authApi";
+import axios from "axios";
 
 export default function FarmerDashboard() {
   const [userData, setUserData] = useState(null);
+  const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch current logged-in user
+  const fetchUserData = async () => {
+    try {
+      const res = await api.get("/api/auth/me");
+      setUserData(res.data.user);
+    } catch (err) {
+      console.error("Failed to fetch user data:", err);
+      setError("Unable to load user details.");
+    }
+  };
+
+  // Fetch parali listings from backend
+  const fetchListings = async () => {
+    try {
+      const res = await axios.get("http://localhost:5000/api/parali");
+      setListings(res.data.listings || []);
+    } catch (err) {
+      console.error("Failed to fetch listings:", err);
+      setError("Unable to load parali listings.");
+    }
+  };
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const res = await api.get("/api/auth/me");
-        setUserData(res.data.user);
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      } finally {
-        setLoading(false);
-      }
+    const fetchAll = async () => {
+      setLoading(true);
+      await Promise.all([fetchUserData(), fetchListings()]);
+      setLoading(false);
     };
-
-    fetchUserData();
+    fetchAll();
   }, []);
 
   if (loading) {
@@ -29,27 +48,79 @@ export default function FarmerDashboard() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-red-50 text-red-700 font-semibold">
+        {error}
+      </div>
+    );
+  }
+
+  const role = userData?.role?.toLowerCase() || "farmer";
+
+  const getActionText = () => {
+    switch (role) {
+      case "buyer":
+        return "Order Now";
+      case "logistics":
+        return "Complete Now";
+      default:
+        return "Place Bid";
+    }
+  };
+
+  const summaryCards = [
+    { title: "Active Listings", value: listings.length },
+    {
+      title: "Total Quantity Listed",
+      value:
+        listings.reduce((sum, item) => sum + Number(item.quantity || 0), 0) +
+        " tons",
+    },
+    { title: "Revenue (Est.)", value: "₹" + listings.length * 5000 },
+    {
+      title: "Pollution Prevented",
+      value: `${(listings.length * 0.3).toFixed(1)}T CO₂`,
+    },
+  ];
+
+  const ordersData = listings.map((listing, index) => ({
+    id: index + 1,
+    crop: listing.cropType,
+    qty: listing.quantity,
+    price: listing.predictedPrice
+      ? `₹${listing.predictedPrice}/ton`
+      : "—",
+    status: "Active",
+    date: new Date(listing.createdAt).toLocaleDateString(),
+  }));
+
+  const residuesData = listings.map((item, index) => ({
+    id: index + 1,
+    biomassType: item.cropType,
+    quantityKg: item.quantity * 1000,
+    proposedPrice: item.proposedPrice || "—",
+    predictedPrice: item.predictedPrice || "—",
+    farmer: item.farmerName,
+    location: item.location,
+    priceType: "Fixed",
+  }));
+
   return (
     <DashBoard
       userName={userData?.fullName || "Farmer"}
       sidebarLinks={[
-        { name: "Dashboard", path: "/farmer/dashboard", icon: "📊" },
-        { name: "List Goods", path: "/farmer/listParali", icon: "📦" },
-        { name: "AI Price Predictor", path: "/farmer/pricePredictor", icon: "💰" },
-        { name: "Parali Classifier", path: "/farmer/paraliClassifier", icon: "🔍" },
+        { name: "Dashboard", path: "/farmer/dashboard" },
+        { name: "List Goods", path: "/farmer/listParali" },
+        { name: "AI Price Predictor", path: "/farmer/pricePredictor" },
+        { name: "Parali Classifier", path: "/farmer/paraliClassifier" },
       ]}
-      summaryCards={[
-        { title: "Active Deliveries", value: 3 },
-        { title: "Total Weight Supplied", value: "3200 kg" },
-        { title: "Revenue", value: "₹9,600" },
-        { title: "Pollution Prevented", value: "1.2T CO₂" }
-      ]}
-      ordersData={[
-        { id: 1, crop: "Paddy Straw", qty: 1200, price: 8, status: "Ordered", date: "2025-10-25" },
-        { id: 2, crop: "Wheat Straw", qty: 1000, price: 7, status: "In Transit", date: "2025-10-22" },
-        { id: 3, crop: "Sugarcane Trash", qty: 1000, price: 10, status: "Delivered", date: "2025-10-18" },
-      ]}
+      summaryCards={summaryCards}
+      ordersData={ordersData}
+      residuesData={residuesData.map((item) => ({
+        ...item,
+        actionText: getActionText(),
+      }))}
     />
   );
 }
-
