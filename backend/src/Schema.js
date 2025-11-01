@@ -137,5 +137,14 @@ export const paraliSchema = Joi.object({
   isListedForMarketplace: Joi.boolean().optional(),
 });
 
+export const buyerSchema = Joi.object({
+  buyerName: Joi.string().min(3).max(50).required(),
+  buyerEmail: Joi.string().email().required(),
+  listingId: Joi.string().required(),
+  cropType: Joi.string().required(),
+  quantity: Joi.number().positive().required(),
+  price: Joi.number().positive().required(),
+});
+
 
 
