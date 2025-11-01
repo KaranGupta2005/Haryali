@@ -14,8 +14,9 @@ import {
   Leaf,
   Sparkles
 } from "lucide-react";
+import api from "../api/authApi";
+import { NavLink } from "react-router-dom";
 
-// Features Data
 const features = [
   {
     id: 1,
@@ -115,7 +116,7 @@ function FeatureModal({ feature, onClose }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={onClose} // closes modal when clicking outside
+        onClick={onClose} 
       >
         <motion.div
           className="relative bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden border border-green-100"
@@ -123,7 +124,7 @@ function FeatureModal({ feature, onClose }) {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          onClick={(e) => e.stopPropagation()} // prevents closing when clicking inside modal
+          onClick={(e) => e.stopPropagation()} 
         >
           <button
             onClick={onClose}
@@ -171,6 +172,26 @@ function FeatureModal({ feature, onClose }) {
 
 export default function Features() {
   const [selectedFeature, setSelectedFeature] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const res = await api.get("/api/auth/me");
+        setUser(res.data.user);
+      } catch (err) {
+        setUser(null);
+      }
+    }
+    fetchUser();
+  }, []);
+
+  const getDashboardRoute = () => {
+    if (user?.role === "farmer") return "/farmer/dashboard";
+    if (user?.role === "buyer") return "/buyer/dashboard";
+    if (user?.role === "logistics") return "/logistics/dashboard";
+    return "/dashboard";
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: "#ABE188" }}>
@@ -217,10 +238,12 @@ export default function Features() {
             <p className="text-lg text-gray-600 mb-8">
               Join thousands of farmers and buyers creating a sustainable future
             </p>
+            <NavLink to={user ? getDashboardRoute() : "/signup"}>
             <button className="inline-flex items-center gap-3 px-10 py-5 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 text-white font-bold text-xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
               <span>Start Your Journey</span>
               <Leaf className="w-6 h-6" />
             </button>
+            </NavLink>
           </div>
         </div>
       </div>

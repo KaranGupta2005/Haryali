@@ -154,7 +154,7 @@ function HowItWorksSection() {
               transition={{ delay: index * 0.2, duration: 0.6 }}
               className="flex flex-col items-center text-center relative z-10"
             >
-              {/* Connector Line */}
+              
               {index < steps.length - 1 && (
                 <div className="hidden md:block absolute top-12 left-[50%] w-full h-0.5 bg-gradient-to-r from-green-500/50 to-transparent" />
               )}
