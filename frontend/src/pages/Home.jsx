@@ -1,12 +1,36 @@
 "use client";
-import { FlipWords } from "@/components/ui/flipWords";
-import { motion } from "motion/react";
+
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { motion } from "framer-motion";
 import FeaturesSection from "../components/FeatureSection";
 import { BackgroundRippleEffect } from "@/components/ui/BackgroundRippleEffect";
 import { Upload, Brain, CheckCircle, Pill, Volume2 } from "lucide-react";
+import api from "../api/authApi";
+import { FlipWords } from "@/components/ui/FlipWords";
 
 export default function Home() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    async function fetchUser() {
+      try {
+        const res = await api.get("/api/auth/me");
+        setUser(res.data.user);
+      } catch (err) {
+        setUser(null);
+      }
+    }
+    fetchUser();
+  }, []);
+
+  const getDashboardRoute = () => {
+    if (user?.role === "farmer") return "/farmer/dashboard";
+    if (user?.role === "buyer") return "/buyer/dashboard";
+    if (user?.role === "logistics") return "/logistics/dashboard";
+    return "/dashboard";
+  };
+
   return (
     <>
       {/* Hero Section */}
@@ -45,12 +69,15 @@ export default function Home() {
           {/* Buttons */}
           <div className="flex flex-col md:flex-row justify-center mt-12 items-center gap-6 md:gap-10">
             {[
-              { label: "Explore Dashboard", to: "/solutions" },
-              { label: "Learn More", to: "/learnMore" },
+              { label: "Explore Dashboard", to: getDashboardRoute() },
+              { label: "Learn More", to: "/about" },
             ].map((btn, idx) => (
               <NavLink key={idx} to={btn.to}>
                 <motion.button
-                  whileHover={{ scale: 1.08, boxShadow: "0 0 20px rgba(72, 187, 120, 0.6)" }}
+                  whileHover={{
+                    scale: 1.08,
+                    boxShadow: "0 0 20px rgba(72, 187, 120, 0.6)",
+                  }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
                   className="px-8 py-4 rounded-2xl border border-green-700 text-green-900 font-semibold text-lg backdrop-blur-md bg-white/60 hover:bg-green-600/30 hover:text-white transition-all duration-300 ease-in-out"
@@ -74,11 +101,31 @@ export default function Home() {
 
 function HowItWorksSection() {
   const steps = [
-    { icon: <Upload size={32} />, label: "Upload Photo", description: "Take or upload a photo of your crop" },
-    { icon: <Brain size={32} />, label: "AI Analysis", description: "Our AI analyzes the image instantly" },
-    { icon: <CheckCircle size={32} />, label: "Identification", description: "Disease/pest identified accurately" },
-    { icon: <Pill size={32} />, label: "Remedy", description: "Get organic & chemical treatment options" },
-    { icon: <Volume2 size={32} />, label: "Audio Summary", description: "Listen to guidance in your language" }
+    {
+      icon: <Upload size={32} />,
+      label: "Upload Photo",
+      description: "Take or upload a photo of your crop",
+    },
+    {
+      icon: <Brain size={32} />,
+      label: "AI Analysis",
+      description: "Our AI analyzes the image instantly",
+    },
+    {
+      icon: <CheckCircle size={32} />,
+      label: "Identification",
+      description: "Disease/pest identified accurately",
+    },
+    {
+      icon: <Pill size={32} />,
+      label: "Remedy",
+      description: "Get organic & chemical treatment options",
+    },
+    {
+      icon: <Volume2 size={32} />,
+      label: "Audio Summary",
+      description: "Listen to guidance in your language",
+    },
   ];
 
   return (
@@ -86,7 +133,11 @@ function HowItWorksSection() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-black mb-6 text-white">
-            How <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">Haryali</span> Works
+            How{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-400">
+              Haryali
+            </span>{" "}
+            Works
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             From crop residue listing to payment - we handle everything for you
@@ -114,8 +165,12 @@ function HowItWorksSection() {
               >
                 {step.icon}
               </motion.div>
-              <h3 className="text-lg font-bold text-white mb-2">{step.label}</h3>
-              <p className="text-sm text-gray-400 max-w-[160px]">{step.description}</p>
+              <h3 className="text-lg font-bold text-white mb-2">
+                {step.label}
+              </h3>
+              <p className="text-sm text-gray-400 max-w-[160px]">
+                {step.description}
+              </p>
             </motion.div>
           ))}
         </div>
@@ -123,3 +178,4 @@ function HowItWorksSection() {
     </section>
   );
 }
+
