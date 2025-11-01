@@ -126,13 +126,16 @@ export const paraliSchema = Joi.object({
     .valid("Standing Stubble", "Loose Straw")
     .required(),
   quantity: Joi.number().positive().precision(2).required(),
-  proposedPrice: Joi.number().min(0).precision(2).optional(),
-  predictedPrice: Joi.number().min(0).precision(2).optional(),
   contact: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required()
     .messages({
       "string.pattern.base": "Contact number must be exactly 10 digits.",
     }),
+  proposedPrice: Joi.number().min(0).precision(2).optional(),
+  predictedPrice: Joi.number().min(0).precision(2).optional(),
+  isListedForMarketplace: Joi.boolean().optional(),
 });
+
+
 

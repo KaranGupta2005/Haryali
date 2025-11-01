@@ -21,7 +21,7 @@ export const validateUserLogin = (req, res, next) => {
   }
 };
 
-export const validateParali=(req, res, next) => {
+export const validateParali=(req, res, next)=>{
   const { error } = paraliSchema.validate(req.body, { abortEarly: false });
   if (error) {
     const errorMessages = error.details.map((d) => d.message);
