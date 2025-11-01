@@ -16,17 +16,17 @@ export default function ListParali() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // 🧠 Dummy predicted price generator (±10% variation)
+  // Generate predicted price (±10% random fluctuation)
   const generatePredictedPrice = (price) => {
     const fluctuation = (Math.random() * 0.2 - 0.1) * price; // ±10%
     return Math.max(0, parseFloat(price) + fluctuation).toFixed(2);
   };
 
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     const updated = { ...formData, [name]: value };
 
-    // Auto-update predicted price whenever proposedPrice changes
     if (name === "proposedPrice" && value) {
       updated.predictedPrice = generatePredictedPrice(value);
     }
@@ -34,9 +34,18 @@ export default function ListParali() {
     setFormData(updated);
   };
 
+  // ✅ Corrected Submit Function with Payload Conversion
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { farmerName, location, cropType, quantity, contact, proposedPrice } = formData;
+
+    const payload = {
+      ...formData,
+      quantity: Number(formData.quantity),
+      proposedPrice: Number(formData.proposedPrice),
+      predictedPrice: Number(formData.predictedPrice),
+    };
+
+    const { farmerName, location, cropType, quantity, contact, proposedPrice } = payload;
 
     if (!farmerName || !location || !cropType || !quantity || !contact || !proposedPrice) {
       alert("⚠️ Please fill all fields before submitting.");
@@ -45,9 +54,11 @@ export default function ListParali() {
 
     try {
       setLoading(true);
-      const res = await axios.post("http://localhost:5000/api/parali", formData);
+      const res = await axios.post("http://localhost:5000/api/parali", payload);
       console.log("✅ Listing added:", res.data);
       setSubmitted(true);
+
+      // Reset form after success
       setFormData({
         farmerName: "",
         location: "",
@@ -127,7 +138,7 @@ export default function ListParali() {
                 onChange={handleChange}
                 className="mt-1 w-full border border-gray-300 rounded-xl p-2 focus:ring-2 focus:ring-green-400 focus:outline-none"
               >
-                <option value="">Select crop</option>
+                <option value="">Select type</option>
                 <option value="Standing Stubble">Standing Stubble</option>
                 <option value="Loose Straw">Loose Straw</option>
               </select>
@@ -178,7 +189,7 @@ export default function ListParali() {
               />
             </div>
 
-            {/* Predicted Price (auto-calculated) */}
+            {/* Predicted Price Display */}
             {formData.predictedPrice && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -236,8 +247,7 @@ export default function ListParali() {
               ✅ Listing Submitted Successfully!
             </h2>
             <p className="text-gray-600 mb-4">
-              Thank you, {formData.farmerName || "Farmer"}. Your Parali listing
-              has been saved.
+              Thank you, {formData.farmerName || "Farmer"}. Your Parali listing has been saved.
             </p>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -253,4 +263,3 @@ export default function ListParali() {
     </motion.div>
   );
 }
-

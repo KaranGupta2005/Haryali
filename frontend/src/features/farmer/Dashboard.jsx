@@ -9,7 +9,7 @@ export default function FarmerDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch current logged-in user
+  // ✅ Fetch logged-in user
   const fetchUserData = async () => {
     try {
       const res = await api.get("/api/auth/me");
@@ -20,7 +20,7 @@ export default function FarmerDashboard() {
     }
   };
 
-  // Fetch parali listings from backend
+  // ✅ Fetch parali listings from backend
   const fetchListings = async () => {
     try {
       const res = await axios.get("http://localhost:5000/api/parali");
@@ -40,24 +40,21 @@ export default function FarmerDashboard() {
     fetchAll();
   }, []);
 
-  if (loading) {
+  if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-green-100 via-white to-lime-50">
+      <div className="min-h-screen flex items-center justify-center bg-green-50">
         <div className="text-2xl font-bold text-green-700">Loading...</div>
       </div>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
       <div className="min-h-screen flex items-center justify-center bg-red-50 text-red-700 font-semibold">
         {error}
       </div>
     );
-  }
 
   const role = userData?.role?.toLowerCase() || "farmer";
-
   const getActionText = () => {
     switch (role) {
       case "buyer":
@@ -88,10 +85,9 @@ export default function FarmerDashboard() {
     id: index + 1,
     crop: listing.cropType,
     qty: listing.quantity,
-    price: listing.predictedPrice
-      ? `₹${listing.predictedPrice}/ton`
-      : "—",
-    status: "Active",
+    proposedPrice: listing.proposedPrice || "—",
+    predictedPrice: listing.predictedPrice || "—",
+    status: listing.status || "Active",
     date: new Date(listing.createdAt).toLocaleDateString(),
   }));
 
@@ -124,3 +120,4 @@ export default function FarmerDashboard() {
     />
   );
 }
+
