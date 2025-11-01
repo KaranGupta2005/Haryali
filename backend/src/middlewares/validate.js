@@ -1,4 +1,4 @@
-import { userSignupSchema, userLoginSchema } from "../Schema.js";
+import { userSignupSchema, userLoginSchema,paraliSchema } from "../Schema.js";
 import ExpressError from "./expressError.js";
 
 export const validateUserSignup = (req, res, next) => {
@@ -20,4 +20,15 @@ export const validateUserLogin = (req, res, next) => {
     next();
   }
 };
+
+export const validateParali=(req, res, next) => {
+  const { error } = paraliSchema.validate(req.body, { abortEarly: false });
+  if (error) {
+    const errorMessages = error.details.map((d) => d.message);
+    return res.status(400).json({ errors: errorMessages });
+  }else{
+    next();
+  }
+}
+
 

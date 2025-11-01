@@ -8,6 +8,7 @@ import connectToDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import emailRoutes from "./routes/emailRoutes.js";
+import farmerRoutes from "./routes/farmerRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,6 +36,7 @@ await connectToDB();
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/email", emailRoutes);
+app.use("/api/parali", farmerRoutes);
 
 app.get("/", (req, res) => {
   res.send("Haryali Backend Server is running 🌿");
