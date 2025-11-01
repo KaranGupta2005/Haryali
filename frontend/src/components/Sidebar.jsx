@@ -32,7 +32,7 @@ export default function Sidebar({ links = [], brand = "Haryali" }) {
             }`
           }
         >
-          <span className="mr-1">{link.icon}</span> {link.name}
+          {link.name}
         </NavLink>
       ))}
       

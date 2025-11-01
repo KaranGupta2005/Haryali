@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 
 export default function AIPriceYieldPredictor() {
-  // PRICE STATE
   const [priceLoading, setPriceLoading] = useState(false);
   const [priceVisible, setPriceVisible] = useState(false);
   const [priceData, setPriceData] = useState({
@@ -13,7 +12,6 @@ export default function AIPriceYieldPredictor() {
     payout: "₹0",
   });
 
-  // YIELD STATE
   const [yieldLoading, setYieldLoading] = useState(false);
   const [yieldVisible, setYieldVisible] = useState(false);
   const [yieldData, setYieldData] = useState({
@@ -24,7 +22,6 @@ export default function AIPriceYieldPredictor() {
     perAcre: "0 t/acre",
   });
 
-  // Particle positions
   const [particles] = useState(() =>
     Array.from({ length: 12 }).map((_, i) => ({
       id: i,
@@ -36,7 +33,6 @@ export default function AIPriceYieldPredictor() {
     }))
   );
 
-  // Price form handler
   const handlePriceSubmit = (e) => {
     e.preventDefault();
     const form = e.target;
@@ -46,7 +42,6 @@ export default function AIPriceYieldPredictor() {
     const moisture = parseFloat(form["price-moisture"].value) || 0;
     const demand = form["price-demand"].value;
 
-    // Basic validation
     if (!crop || quantity <= 0) return;
 
     setPriceLoading(true);
@@ -84,7 +79,6 @@ export default function AIPriceYieldPredictor() {
     }, 900);
   };
 
-  // Yield form handler
   const handleYieldSubmit = (e) => {
     e.preventDefault();
     const form = e.target;
