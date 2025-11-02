@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import api from "../../api/authApi";
 import { motion, AnimatePresence } from "motion/react";
+import Sidebar from "@/components/Sidebar";
 
 export default function BuyerMarket() {
   const [listings, setListings] = useState([]);
@@ -19,6 +20,12 @@ export default function BuyerMarket() {
       console.error("Failed to fetch buyer:", err);
     }
   };
+
+  const sidebarLinks = [
+          { name: "Dashboard", path: "/buyer/dashboard" },
+          { name: "My Orders", path: "/buyer/orders" },
+          { name: "Marketplace", path: "/buyer/market" },
+        ];
 
   // ✅ Fetch all active parali listings
   const fetchListings = async () => {
@@ -67,6 +74,8 @@ export default function BuyerMarket() {
 
   return (
     <div className="min-h-screen bg-gradient-to-tr from-green-100 via-white to-lime-50 p-8 md:p-14">
+
+      <Sidebar links={sidebarLinks} brand="Buyer Portal"/>
       {/* ✅ Success Notification */}
       <AnimatePresence>
         {successMessage && (
